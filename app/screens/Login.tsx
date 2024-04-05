@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,15 +7,20 @@ import {
   ActivityIndicator,
   Button,
   KeyboardAvoidingView,
+  TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import { NavigationProp } from "@react-navigation/native";
 import { FIREBASE_AUTH } from "../../FirebaseConfig";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 
-const Login = () => {
+interface RouterProps {
+  navigation: NavigationProp<any, any>;
+}
+
+const Login = ({ navigation }: RouterProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,23 +40,6 @@ const Login = () => {
     }
   };
 
-  const signUp = async () => {
-    setLoading(true);
-    try {
-      const response = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      alert("Check your emails!");
-    } catch (error: any) {
-      console.log(error);
-      alert("Sign in failed: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <View style={styles.container}>
       <KeyboardAvoidingView behavior="padding">
@@ -60,7 +49,7 @@ const Login = () => {
           placeholder="Email"
           autoCapitalize="none"
           onChangeText={(text) => setEmail(text)}
-        ></TextInput>
+        />
         <TextInput
           secureTextEntry={true}
           value={password}
@@ -68,13 +57,17 @@ const Login = () => {
           placeholder="Password"
           autoCapitalize="none"
           onChangeText={(text) => setPassword(text)}
-        ></TextInput>
+        />
         {loading ? (
           <ActivityIndicator size="large" color="#0000ff" />
         ) : (
           <>
             <Button title="Login" onPress={signIn} />
-            <Button title="Create account" onPress={signUp} />
+            <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+              <Text style={styles.registerText}>
+                Don't have an account? Register
+              </Text>
+            </TouchableOpacity>
           </>
         )}
       </KeyboardAvoidingView>
@@ -97,5 +90,11 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 10,
     backgroundColor: "#fff",
+  },
+  registerText: {
+    marginTop: 10,
+    textAlign: "center",
+    color: "blue",
+    textDecorationLine: "underline",
   },
 });
