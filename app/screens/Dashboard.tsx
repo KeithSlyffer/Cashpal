@@ -1,9 +1,8 @@
-import { View, Text, TouchableOpacity, StyleSheet, Button } from "react-native";
-import { Avatar, Icon } from "react-native-elements";
 import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Avatar, Icon } from "react-native-elements";
 import { NavigationProp } from "@react-navigation/native";
 import { FIREBASE_AUTH } from "../../FirebaseConfig";
-import LottieView from "lottie-react-native";
 
 interface RouterProps {
   navigation: NavigationProp<any, any>;
@@ -11,7 +10,8 @@ interface RouterProps {
 
 const Dashboard = ({ navigation }: RouterProps) => {
   const userData = FIREBASE_AUTH.currentUser;
-  console.log(userData);
+  // Assuming you have a variable for the balance
+  const balance = "13,315.51"; // Example balance, replace with your logic to fetch the actual balance
 
   return (
     <View style={styles.container}>
@@ -19,20 +19,39 @@ const Dashboard = ({ navigation }: RouterProps) => {
         <View style={styles.userInfo}>
           <Avatar
             rounded
-            source={{ uri: userData?.photoURL ?? undefined }}
+            source={{
+              uri:
+                userData?.photoURL ||
+                "https://static.vecteezy.com/system/resources/thumbnails/007/140/806/small/profile-glyph-circle-background-icon-vector.jpg",
+            }}
             size="medium"
+            containerStyle={styles.icon}
           />
           <View style={styles.userInfoText}>
-            <Text style={styles.userName}>{userData?.displayName}</Text>
-            <Text>Welcome back!</Text>
+            <Text style={styles.userName}>
+              Hey, {userData?.displayName || "Test name"}
+            </Text>
+            <Text style={styles.text}>Welcome back!</Text>
           </View>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
-          <Icon name="settings" />
-        </TouchableOpacity>
+        <View style={styles.headerIcons}>
+          <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
+            <Icon color={"#fff"} name="settings" style={styles.iconMargin} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => FIREBASE_AUTH.signOut()}>
+            <Icon color={"#fff"} name="logout" />
+          </TouchableOpacity>
+        </View>
       </View>
 
-      <Button onPress={() => FIREBASE_AUTH.signOut()} title="Logout" />
+      {/* Section for displaying balance */}
+      <View style={styles.balanceContainer}>
+        <Text style={styles.balanceText}>Your balance</Text>
+        <Text style={styles.balanceAmount}>€{balance}</Text>
+      </View>
+
+      {/* Divider line */}
+      <View style={styles.divider} />
     </View>
   );
 };
@@ -40,7 +59,8 @@ const Dashboard = ({ navigation }: RouterProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#264653",
+    backgroundColor: "#121212",
+    padding: 20,
   },
   header: {
     flexDirection: "row",
@@ -57,10 +77,39 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 18,
+    color: "#fff",
   },
-  animation: {
-    width: 400,
-    height: 400,
+  text: {
+    color: "#fff",
+  },
+  icon: {
+    marginRight: 10,
+  },
+  headerIcons: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  iconMargin: {
+    marginRight: 16,
+  },
+  balanceContainer: {
+    marginTop: 10,
+    padding: 16,
+  },
+  balanceText: {
+    fontSize: 20,
+    color: "#fff",
+  },
+  balanceAmount: {
+    fontSize: 64,
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  divider: {
+    borderBottomColor: "#B3B3B3",
+    borderBottomWidth: 0.5,
+    marginVertical: 10,
+    marginHorizontal: -20,
   },
 });
 
